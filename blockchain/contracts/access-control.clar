@@ -82,9 +82,10 @@
 
 (define-read-only (can-upload-dataset (user principal))
   (match (get-user-profile user)
-    profile (and (not (get banned profile)) 
+    profile (and (not (get banned profile))
                  (or (>= (get role profile) ROLE_VERIFIED_SELLER)
-                     (get-user-permission user "upload-dataset")))
+                     (get-user-permission user "upload-dataset")
+                     (contract-call? .staking-pool is-premium-staker user)))
     false
   )
 )
@@ -98,6 +99,11 @@
 
 (define-read-only (get-total-users)
   (var-get total-users)
+)
+
+(define-read-only (has-premium-benefits (user principal))
+  (or (>= (get role (default-to { role: u0, verified: false, reputation-score: u0, joined-at: u0, last-active: u0, total-uploads: u0, total-purchases: u0, banned: false } (get-user-profile user))) ROLE_PREMIUM_BUYER)
+      (contract-call? .staking-pool is-premium-staker user))
 )
 
 ;; Public functions
