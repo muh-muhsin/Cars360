@@ -2,11 +2,12 @@
 
 ## Overview
 
-Cars360 uses three main smart contracts deployed on the Stacks blockchain to manage the decentralized data marketplace:
+Cars360 uses four main smart contracts deployed on the Stacks blockchain to manage the decentralized data marketplace:
 
 1. **Dataset Registry** - Manages dataset registration, metadata, and ownership
 2. **Marketplace** - Handles STX payments and transactions
 3. **Access Control** - Manages user permissions and verification
+4. **Staking Pool** - Enables token staking for rewards and premium benefits
 
 ## Contract Architecture
 

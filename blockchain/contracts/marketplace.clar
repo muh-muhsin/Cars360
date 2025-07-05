@@ -90,6 +90,25 @@
   )
 )
 
+(define-read-only (calculate-fees-with-staking-discount (price uint) (buyer principal))
+  (let
+    (
+      (base-platform-fee-percentage (contract-call? .dataset-registry get-platform-fee-percentage))
+      (staking-discount (contract-call? .staking-pool get-staking-discount buyer))
+      (discounted-fee-percentage (- base-platform-fee-percentage (/ (* base-platform-fee-percentage staking-discount) u100)))
+      (platform-fee (/ (* price discounted-fee-percentage) u100))
+      (seller-amount (- price platform-fee))
+    )
+    {
+      platform-fee: platform-fee,
+      seller-amount: seller-amount,
+      total-price: price,
+      discount-applied: staking-discount,
+      savings: (- (/ (* price base-platform-fee-percentage) u100) platform-fee)
+    }
+  )
+)
+
 ;; Public functions
 
 (define-public (purchase-dataset (dataset-id uint))
@@ -99,7 +118,7 @@
       (buyer tx-sender)
       (seller (get owner dataset-info))
       (price (get price dataset-info))
-      (fee-calculation (calculate-fees price))
+      (fee-calculation (calculate-fees-with-staking-discount price buyer))
       (platform-fee (get platform-fee fee-calculation))
       (seller-amount (get seller-amount fee-calculation))
       (tx-id (var-get next-tx-id))
